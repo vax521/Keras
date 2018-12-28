@@ -1,16 +1,11 @@
 import random
-import keras
 import sys
-from keras import layers
+import keras
 import numpy as np
-import keras.backend.tensorflow_backend as KTF
-import tensorflow as tf
+from keras import layers
+import myutils.performance_utils as performance_utils
 
-# 充分使用CPU
-config = tf.ConfigProto(intra_op_parallelism_threads=4, inter_op_parallelism_threads=4,
-                        allow_soft_placement=True, device_count={'CPU': 4})
-session = tf.Session(config=config)
-KTF.set_session(session)
+performance_utils.opitimize_cpu()
 
 
 text = open("../dataset/nietzsche.txt").read().lower()

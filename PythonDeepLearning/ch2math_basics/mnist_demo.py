@@ -1,17 +1,13 @@
-import tensorflow as tf
+
 import time
 from keras.datasets import mnist
 from keras import models
 from keras import layers
 from keras.utils import to_categorical
-import keras.backend.tensorflow_backend as KTF
-import matplotlib.pyplot as plt
+import myutils.plot_utils as plot_utils
+import myutils.performance_utils as performance_utils
 
-# 充分使用CPU
-config = tf.ConfigProto(intra_op_parallelism_threads=4, inter_op_parallelism_threads=4,
-                        allow_soft_placement=True, device_count={'CPU': 4})
-session = tf.Session(config=config)
-KTF.set_session(session)
+performance_utils.opitimize_cpu()
 
 (train_images, train_labels), (test_images, test_labels) = mnist.load_data()
 # 图像数据处理
@@ -43,28 +39,5 @@ test_loss, test_acc = model.evaluate(test_images, test_labels)
 print("test_acc:{}\n".format(test_acc))
 
 history_dict = history.history
-loss_values = history_dict['loss']
-val_loss_values = history_dict['val_loss']
-epochs = range(1, len(loss_values)+1)
-
-plt.figure(figsize=(8, 16))
-plt.subplot(1, 2, 1)
-plt.plot(epochs, loss_values, 'bo', label='Training loss')
-plt.plot(epochs, val_loss_values, 'b', label='Validation loss')
-plt.title('Training and validation loss')
-plt.xlabel('Epochs')
-plt.ylabel('Loss')
-plt.legend()
-
-acc = history_dict['acc']
-val_acc = history_dict['val_acc']
-plt.subplot(1, 2, 2)
-plt.plot(epochs, acc, '-', label='Train Acc')
-plt.plot(epochs, val_acc, '--', label='Validation Acc')
-plt.title('Training and validation acc')
-plt.xlabel('Epochs')
-plt.ylabel('Acc')
-plt.legend()
-plt.show()
-
+plot_utils.plot_history(history_dict)
 
