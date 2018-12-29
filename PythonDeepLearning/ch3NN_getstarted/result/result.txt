@@ -1,0 +1,4 @@
+
+movies_classification.py
+使用model.add(SimpleRNN(32))，模型准确率为85%
+使用model.add(LSTM(32))，模型准确率
