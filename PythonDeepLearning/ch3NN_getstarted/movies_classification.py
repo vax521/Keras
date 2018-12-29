@@ -22,6 +22,8 @@ def vectorize_sequences(sequences, dimensions=10000):
     for i, sequence in enumerate(sequences):
         results[i, sequence] = 1.
     return results
+
+
 x_train = vectorize_sequences(train_data)
 y_train = vectorize_sequences(test_data)
 # 标签向量化
