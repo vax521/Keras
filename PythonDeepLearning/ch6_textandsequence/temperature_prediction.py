@@ -1,5 +1,4 @@
 import numpy as np
-import matplotlib.pyplot as plt
 from keras import models
 from keras import layers
 from keras import optimizers
@@ -44,15 +43,16 @@ def data_generator(data, lookback, delay, min_index, max_index, shuffle=False, b
                 i = min_index + lookback
             rows = np.arange(i, min(i + batch_size, max_index))
             i += len(rows)
-            samples = np.zeros((len(rows),
+        samples = np.zeros((len(rows),
                                 lookback // step,
                                 data.shape[-1]))
-            targets = np.zeros((len(rows),))
-            for j, row in enumerate(rows):
-                indices = range(rows[j] - lookback, rows[j], step)
-                samples[j] = data[indices]
-                targets[j] = data[rows[j] + delay][1]
-            yield samples, targets
+        targets = np.zeros((len(rows),))
+        for j, row in enumerate(rows):
+            indices = range(rows[j] - lookback, rows[j], step)
+            samples[j] = data[indices]
+            targets[j] = data[rows[j] + delay][1]
+        yield samples, targets
+
 
 lookback = 1440
 step = 6
@@ -78,9 +78,42 @@ def evaluate_naive_method():
     print(np.mean(batch_maes))
 # evaluate_naive_method()
 
-model = models.Sequential()
-model.add(layers.Flatten(input_shape=(lookback//step, float_data.shape[-1])))
-model.add(layers.Dense(64, activation='relu'))
+
+def fnn_model():
+    model = models.Sequential()
+    model.add(layers.Flatten(input_shape=(lookback//step, float_data.shape[-1])))
+    model.add(layers.Dense(32, activation='relu'))
+    model.add(layers.Dense(1))
+    return model
+
+
+def gru_model():
+    """GRU model"""
+    model = models.Sequential()
+    model.add(layers.GRU(32, input_shape=(None, float_data.shape[-1])))
+    model.add(layers.Dense(1))
+    return model
+
+
+def gru_dropout_model():
+    """使用Dropout正则化"""
+    model = models.Sequential()
+    model.add(layers.GRU(32, dropout=0.2, recurrent_dropout=0.2, input_shape=(None, float_data.shape[-1])))
+    model.add(layers.Dense(1))
+    return model
+
+
+def iter_gru_model():
+    """使用Dropout正则化的GRU堆叠层"""
+    model = models.Sequential()
+    model.add(layers.GRU(32, dropout=0.1, recurrent_dropout=0.5,
+                         return_sequences=True, input_shape=(None, float_data.shape[-1])))
+    model.add(layers.GRU(32, dropout=0.2, recurrent_dropout=0.5))
+    model.add(layers.Dense(1))
+    return model
+
+
+model = gru_dropout_model()
 model.compile(optimizer=optimizers.RMSprop(), loss='mse', metrics=['mae'])
 history = model.fit_generator(train_gen, steps_per_epoch=500, epochs=20, validation_data=val_gen, validation_steps=val_steps)
 plot_utils.plot_regression_his(history.history)
