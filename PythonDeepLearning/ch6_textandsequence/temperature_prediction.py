@@ -112,8 +112,11 @@ def iter_gru_model():
     model.add(layers.Dense(1))
     return model
 
-
-model = gru_dropout_model()
+def get_Bidirectional_GRU():
+    model = models.Sequential()
+    model.add(layers.Bidirectional(layers.GRU(32),input_shape=(None, float_data.shape[-1])))
+    model.add(layers.Dense(1))
+model = iter_gru_model()
 model.compile(optimizer=optimizers.RMSprop(), loss='mse', metrics=['mae'])
 history = model.fit_generator(train_gen, steps_per_epoch=500, epochs=20, validation_data=val_gen, validation_steps=val_steps)
 plot_utils.plot_regression_his(history.history)
