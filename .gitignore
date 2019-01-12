@@ -2,3 +2,5 @@
 .vscode/launch.json
 .ipynb_checkpoints/cifar10-cnn-checkpoint.ipynb
 PythonDeepLearning/dataset
+PythonDeepLearning/ch7_senior_best_practice/my_log_dir/events.out.tfevents.1547269948.10-012-0810
+*.10-012-0810
