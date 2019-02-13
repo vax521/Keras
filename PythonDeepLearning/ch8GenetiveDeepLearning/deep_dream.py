@@ -4,9 +4,11 @@ from keras import backend as K
 import myutils.performance_utils as performance_utils
 performance_utils.opitimize_cpu()
 import scipy
+import imageio
 from keras.preprocessing import image
 
 
+##工具函数
 def resize_img(img, size):
      img = np.copy(img)
      factors = (1,float(size[0]) / img.shape[1], float(size[1]) / img.shape[2], 1)
@@ -15,7 +17,7 @@ def resize_img(img, size):
 
 def save_img(img, fname):
     pil_img = deprocess_image(np.copy(img))
-    scipy.misc.imsave(fname, pil_img)
+    imageio.imwrite(fname, pil_img)
 
 
 def preprocess_image(image_path):
@@ -93,9 +95,11 @@ def gradient_ascent(x, iterations, step, max_loss=None):
 step = 0.01
 num_octave = 3
 octave_scale = 1.4
-iterations = 20
-max_loss = 10.
-base_image_path = './image/base.jpg'
+# iterations = 20
+# max_loss = 10.
+iterations = 30
+max_loss = 15.
+base_image_path = './image/demo.jpg'
 img = preprocess_image(base_image_path)
 original_shape = img.shape[1:3]
 successive_shapes = [original_shape]
